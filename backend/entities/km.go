@@ -137,4 +137,21 @@ type (
 		CreatedAt          time.Time `gorm:"autoCreateTime"`
 		CreatedBy          string
 	}
+
+	HistoryKnowledge struct {
+		ID                 int
+		KnowledgeContentId int
+		Note               string
+		Type               string
+		Value              string
+		Status             string
+		Date               time.Time `gorm:"default:null"` // Date when approved or rejected
+		Requestor          string
+		CreatedAt          time.Time `gorm:"autoCreateTime"`
+		CreatedBy          int       `gorm:"default:null"`
+		UpdatedAt          time.Time `gorm:"default:null"`
+		UpdatedBy          int       `gorm:"default:null"`
+		DeletedAt          time.Time `gorm:"default:null"`
+		Deleted            int       `gorm:"default:null"`
+	}
 )

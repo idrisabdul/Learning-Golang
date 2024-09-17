@@ -53,6 +53,12 @@ type (
 		Status     bool        `json:"status"`
 		Data       interface{} `json:"data,omitempty"`
 	}
+
+	ResponseError struct {
+		StatusCode int    `json:"status_code"`
+		Message    string `json:"message"`
+		Error      string `json:"error,omitempty"`
+	}
 )
 
 /// pagination

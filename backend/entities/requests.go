@@ -115,4 +115,15 @@ type (
 		CreatedBy  int                     `form:"-"`
 		Attachment []*multipart.FileHeader `form:"-"`
 	}
+
+	RequestHistoryKnowledge struct {
+		KnowledgeContentID int    `json:"knowledge_content_id" validate:"required"`
+		Note               string `json:"note,omitempty"`
+		Type               string `json:"type" validate:"required"`
+		Value              string `json:"value" validate:"required"`
+	}
+
+	ApprovalKM struct {
+		ApprovedStatus string `json:"approved_status" validate:"required"`
+	}
 )

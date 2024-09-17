@@ -93,8 +93,9 @@ func StartApps() {
 
 	// Search
 	SearchRoute := routes.Search{
-		App:           app,
-		SearchHandler: SetupSearch(mysql, log),
+		App:            app,
+		SearchHandler:  SetupSearch(mysql, log),
+		HistoryHandler: SetupHistory(mysql, log),
 	}
 	SearchRoute.SearchRoute()
 
