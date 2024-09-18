@@ -107,12 +107,20 @@ func StartApps() {
 
 	WorkDetailRoute.SetupWorkDetail()
 
+	//HistoryKM
+	HistoryRoute := routes.HistoryRoute{
+		App:         app,
+		HistoryHdlr: setupHistoryListKM(mysql, log),
+	}
+
+	HistoryRoute.HistoryRoute()
+
 	//Feedback
 	FeedbackRoute := routes.FeedbackRoute{
-		App:            app,
+		App:          app,
 		FeedbackHdlr: setupFeedback(mysql, log),
 	}
-	
+
 	FeedbackRoute.SetupFeedback()
 
 	// Relation
