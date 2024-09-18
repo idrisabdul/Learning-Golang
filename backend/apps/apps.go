@@ -55,9 +55,10 @@ func StartApps() {
 	mysql := setupMySQLConnection()
 
 	KMRoutes := routes.KMRoutes{
-		App:  app,
-		List: setupList(mysql, log),
-		CRUD: setupCRUD(mysql, log),
+		App:     app,
+		List:    setupList(mysql, log),
+		CRUD:    setupCRUD(mysql, log),
+		History: setupHistory(mysql, log),
 	}
 	KMRoutes.SetupKMRoutes()
 
@@ -80,7 +81,7 @@ func StartApps() {
 		Symptoms:            setupSymptoms(mysql, log),
 		UpdateRequestStatus: setupRequestUpdateStatus(mysql, log),
 		WorkDetailType:      setupWorkDetailType(mysql, log),
-		RelationType:      setupRelationType(mysql, log),
+		RelationType:        setupRelationType(mysql, log),
 	}
 	OptionsRoute.SetupOptions()
 
