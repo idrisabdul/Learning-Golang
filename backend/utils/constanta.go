@@ -24,6 +24,7 @@ const (
 	TABLE_KNOWLEDGE_CONTENT_OPTION      = "knowledge_content_option kco"
 	TABLE_KNOWLEDGE_CONTENT_LOG         = "knowledge_content_log kclo"
 	TABLE_KNOWLEDGE_CONTENT_LOG_VERSION = "knowledge_content_log_version kclv"
+	TABLE_HISTORY_KNOWLEDGE             = "history_knowledge hk"
 
 	//Details
 	TABLE_KNOWLEDGE_WORK_DETAIL               = "knowledge_work_detail kwd"
