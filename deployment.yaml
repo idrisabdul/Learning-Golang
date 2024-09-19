@@ -23,6 +23,15 @@ spec:
           envFrom:
             - configMapRef:
                 name: pdn-env
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                    -  izy2l01ss5kkkngpr4dbw8z
       dnsConfig:
         nameservers:
           - 8.8.8.8
