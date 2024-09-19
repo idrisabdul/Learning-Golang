@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: appname
+  namespace: projectname
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: appname
+  template:
+    metadata:
+      labels:
+        app: appname
+    spec:
+      containers:
+        - name: appname
+          image: userdocker/pdn/appname:tagging
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: pdn-env
+      dnsConfig:
+        nameservers:
+          - 8.8.8.8
+          - 8.8.4.4
+      imagePullSecrets:
+        - name: cred-pdn
+      nodeSelector:
+        kubernetes.io/os: linux
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: appname-service
+  namespace: projectname
+spec:
+  ports:
+    - name: http
+      port: 80
+      protocol: TCP
+      targetPort: 8080
+  selector:
+    app: appname
+  type: ClusterIP
+
+
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: appname-service
+spec:
+  entryPoints:
+    - web
+  routes:
+  - match: Host(`pdn-api.jesica.id`) && PathPrefix(`/api/v1/pathendpoint`)
+    kind: Rule
+    services:
+    - name: appname-service
+      port: 80
+
