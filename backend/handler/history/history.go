@@ -33,12 +33,12 @@ func (h *HistoryHandler) GetHistoryListApproved(c *fiber.Ctx) error {
 		})
 	}
 
-	idKM := c.Params("id")
+	encodedIDKM := c.Params("id")
 
 	page, _ := strconv.Atoi(c.Query("page", "1"))
 	limit, _ := strconv.Atoi(c.Query("limit", "10"))
 
-	getHistoryDetail, err := h.service.GetHistoryListApprove(idKM)
+	getHistoryDetail, err := h.service.GetHistoryListApprove(encodedIDKM)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(utils.ResponseData{
 			StatusCode: fiber.StatusBadRequest,
@@ -69,12 +69,12 @@ func (h *HistoryHandler) GetHistoryListApprovedReject(c *fiber.Ctx) error {
 		})
 	}
 
-	idKM := c.Params("id")
+	encodedIDKM := c.Params("id")
 
 	page, _ := strconv.Atoi(c.Query("page", "1"))
 	limit, _ := strconv.Atoi(c.Query("limit", "10"))
 
-	getHistoryDetail, err := h.service.GetHistoryListApproveReject(idKM)
+	getHistoryDetail, err := h.service.GetHistoryListApproveReject(encodedIDKM)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(utils.ResponseData{
 			StatusCode: fiber.StatusBadRequest,
@@ -105,9 +105,9 @@ func (h *HistoryHandler) GetHistoryListRequested(c *fiber.Ctx) error {
 		})
 	}
 
-	idKM := c.Params("id")
+	encodedIDKM := c.Params("id")
 
-	getHistoryDetail, err := h.service.GetHistoryListRequested(idKM)
+	getHistoryDetail, err := h.service.GetHistoryListRequested(encodedIDKM)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(utils.ResponseData{
 			StatusCode: fiber.StatusBadRequest,
