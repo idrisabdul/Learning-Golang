@@ -145,7 +145,7 @@ func (s *DetailService) GetPermissionKm(idKm string, permission map[string]inter
 		permissionResult.Cancel = true
 	}
 
-	// approve, cancell & reject for sme
+	// approve, cancel & reject for sme
 	if (isSme || isAdmin || IsknowledgeManager) && currentStatus == 3 {
 		permissionResult.Approve = true
 		permissionResult.Reject = true

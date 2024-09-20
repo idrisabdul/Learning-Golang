@@ -18,7 +18,7 @@ func NewHistoryRepo(db *gorm.DB, logger *logrus.Logger) *HistoryRepository {
 	return &HistoryRepository{db, logger}
 }
 
-func (r *HistoryRepository) GetHistoryApprove(idKM string) ([]entities.HistoryKnowledgeList, error) {
+func (r *HistoryRepository) GetHistoryApprove(decodedIDKM string) ([]entities.HistoryKnowledgeList, error) {
 	var history []entities.HistoryKnowledgeList
 
 	if errGetHistoryDetail := r.db.Table(utils.TABLE_HISTORY_KNOWLEDGE).Select(`
@@ -39,7 +39,7 @@ func (r *HistoryRepository) GetHistoryApprove(idKM string) ([]entities.HistoryKn
 	`).
 		Joins("LEFT JOIN "+utils.TABLE_EMPLOYEE+"1 ON hk.requestor = e1.id").
 		Joins("LEFT JOIN "+utils.TABLE_EMPLOYEE+"2 ON hk.updated_by = e2.id").
-		Where("hk.knowledge_content_id = ?", idKM).
+		Where("hk.knowledge_content_id = ?", decodedIDKM).
 		Where("hk.status = 'Approved'").
 		Order("hk.updated_at DESC").
 		Find(&history).Error; errGetHistoryDetail != nil {
@@ -48,7 +48,7 @@ func (r *HistoryRepository) GetHistoryApprove(idKM string) ([]entities.HistoryKn
 	return history, nil
 }
 
-func (r *HistoryRepository) GetHistoryApproveReject(idKM string) ([]entities.HistoryKnowledgeList, error) {
+func (r *HistoryRepository) GetHistoryApproveReject(decodedIDKM string) ([]entities.HistoryKnowledgeList, error) {
 	var history []entities.HistoryKnowledgeList
 
 	if errGetHistoryDetail := r.db.Table(utils.TABLE_HISTORY_KNOWLEDGE).Select(`
@@ -69,7 +69,7 @@ func (r *HistoryRepository) GetHistoryApproveReject(idKM string) ([]entities.His
 	`).
 		Joins("LEFT JOIN "+utils.TABLE_EMPLOYEE+"1 ON hk.requestor = e1.id").
 		Joins("LEFT JOIN "+utils.TABLE_EMPLOYEE+"2 ON hk.updated_by = e2.id").
-		Where("hk.knowledge_content_id = ?", idKM).
+		Where("hk.knowledge_content_id = ?", decodedIDKM).
 		Where("hk.status in ('Approved', 'Rejected')").
 		Order("hk.updated_at DESC").
 		Find(&history).Error; errGetHistoryDetail != nil {
@@ -78,7 +78,7 @@ func (r *HistoryRepository) GetHistoryApproveReject(idKM string) ([]entities.His
 	return history, nil
 }
 
-func (r *HistoryRepository) GetHistoryRequested(idKM string) ([]entities.HistoryNotif, error) {
+func (r *HistoryRepository) GetHistoryRequested(decodedIDKM string) ([]entities.HistoryNotif, error) {
 	var history []entities.HistoryNotif
 
 	if errGetHistoryDetail := r.db.Table(utils.TABLE_HISTORY_KNOWLEDGE).Select(`
@@ -87,7 +87,7 @@ func (r *HistoryRepository) GetHistoryRequested(idKM string) ([]entities.History
 		`).
 		Joins("LEFT JOIN "+utils.TABLE_EMPLOYEE+" ON hk.requestor = e.id").
 		Where("hk.status = 'Requested'").
-		Where("hk.knowledge_content_id = ?", idKM).
+		Where("hk.knowledge_content_id = ?", decodedIDKM).
 		Find(&history).Error; errGetHistoryDetail != nil {
 		return nil, errGetHistoryDetail
 	}
