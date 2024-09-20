@@ -1,10 +1,12 @@
 package history
 
 import (
+	"strconv"
 	"strings"
 	"sygap_new_knowledge_management/backend/entities"
 	"sygap_new_knowledge_management/backend/pkg/errs"
 	"sygap_new_knowledge_management/backend/repository/km/history"
+	"sygap_new_knowledge_management/backend/utils"
 
 	"github.com/sirupsen/logrus"
 )
@@ -18,12 +20,15 @@ func NewSubmitService(repos *history.SubmitRepos, log *logrus.Logger) *SubmitSer
 	return &SubmitService{repos, log}
 }
 
-func (s *SubmitService) ApprovalKM(author int, idKMHistory int, approvedStatus string) error {
+func (s *SubmitService) ApprovalKM(author int, encodedIdHistoryKM string, approvedStatus string) error {
 	var kmHistory entities.HistoryKnowledge
 	var kmDetail entities.KnowledgeContentDetail
 	var km entities.KnowledgeContent
 
 	approvedStatusLower := strings.ToLower(approvedStatus)
+
+	decodedIdHistoryKM, _ := utils.GenerateDecoded(encodedIdHistoryKM)
+	idKMHistory, _ := strconv.Atoi(decodedIdHistoryKM)
 
 	if approvedStatusLower != "rejected" && approvedStatusLower != "approved" {
 		return &errs.BadRequestError{

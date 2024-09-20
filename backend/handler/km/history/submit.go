@@ -34,7 +34,7 @@ func (h *SubmitHistoryHandler) ApprovalKM(c *fiber.Ctx) error {
 
 	author, _ := strconv.Atoi(permission["user"].(map[string]any)["id"].(string))
 
-	idKMHistory, _ := strconv.Atoi(c.Params("id"))
+	encodedIdHistoryKM := c.Params("id")
 
 	var request entities.ApprovalKM
 	validate := validator.New()
@@ -51,7 +51,7 @@ func (h *SubmitHistoryHandler) ApprovalKM(c *fiber.Ctx) error {
 		return utils.ResponseRequestValidationError(c, err)
 	}
 
-	errSubmit := h.submit.ApprovalKM(author, idKMHistory, request.ApprovedStatus)
+	errSubmit := h.submit.ApprovalKM(author, encodedIdHistoryKM, request.ApprovedStatus)
 	if errSubmit != nil {
 		return utils.ResponseWithError(c, errSubmit)
 	}
