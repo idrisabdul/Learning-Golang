@@ -117,7 +117,7 @@ type (
 	}
 
 	RequestHistoryKnowledge struct {
-		KnowledgeContentID int    `json:"knowledge_content_id" validate:"required"`
+		KnowledgeContentID string `json:"knowledge_content_id" validate:"required"`
 		Note               string `json:"note,omitempty"`
 		Type               string `json:"type" validate:"required"`
 		Value              string `json:"value" validate:"required"`

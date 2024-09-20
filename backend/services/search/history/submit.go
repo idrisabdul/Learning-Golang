@@ -7,6 +7,7 @@ import (
 	"sygap_new_knowledge_management/backend/entities"
 	"sygap_new_knowledge_management/backend/pkg/errs"
 	"sygap_new_knowledge_management/backend/repository/search/history"
+	"sygap_new_knowledge_management/backend/utils"
 )
 
 type SubmitService struct {
@@ -26,21 +27,23 @@ func (s *SubmitService) SubmitRequestToUpdateKM(payload entities.RequestHistoryK
 	}
 
 	author, _ := strconv.Atoi(user)
+	decodedKnowledgeContentId, _ := utils.GenerateDecoded(payload.KnowledgeContentID)
+	knowledgeContentId, _ := strconv.Atoi(decodedKnowledgeContentId)
 
 	var km entities.KnowledgeContent
-	if err := s.repo.GetKnowledgeContentById(&km, payload.KnowledgeContentID); err != nil {
+	if err := s.repo.GetKnowledgeContentById(&km, knowledgeContentId); err != nil {
 		s.log.Error(err.Error())
 		return err
 	}
 
 	var kmHistory entities.HistoryKnowledge
-	errGetLatestKMHistory := s.repo.GetLatestKnowledgeContentDetailHistoryByAuthorAndTypeAndKnowledgeContentId(&kmHistory, user, payload.Type, payload.KnowledgeContentID)
+	errGetLatestKMHistory := s.repo.GetLatestKnowledgeContentDetailHistoryByAuthorAndTypeAndKnowledgeContentId(&kmHistory, user, payload.Type, knowledgeContentId)
 
 	if errGetLatestKMHistory != nil {
 		var resourceNotFoundError *errs.ResourceNotFoundError
 		if errors.As(errGetLatestKMHistory, &resourceNotFoundError) {
 			historyKnowledge := &entities.HistoryKnowledge{
-				KnowledgeContentId: payload.KnowledgeContentID,
+				KnowledgeContentId: knowledgeContentId,
 				Note:               payload.Note,
 				Type:               payload.Type,
 				Value:              payload.Value,
