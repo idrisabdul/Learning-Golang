@@ -1,7 +1,9 @@
 package history
 
 import (
+	"errors"
 	"sygap_new_knowledge_management/backend/entities"
+	"sygap_new_knowledge_management/backend/pkg/errs"
 	"sygap_new_knowledge_management/backend/utils"
 
 	// "github.com/gofiber/fiber/v2"
@@ -92,4 +94,21 @@ func (r *HistoryRepository) GetHistoryRequested(decodedIDKM string) ([]entities.
 		return nil, errGetHistoryDetail
 	}
 	return history, nil
+}
+
+func (r *HistoryRepository) GetHistoryKnowledgeByIdAndKMContentId(data *entities.HistoryKnowledge, kmDetailHistoryId int, kmContentId int) error {
+	if err := r.db.
+		Where("id = ?", kmDetailHistoryId).
+		Where("knowledge_content_id = ?", kmContentId).
+		First(&data, kmDetailHistoryId).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return &errs.ResourceNotFoundError{
+				Err: "Data Not Found",
+			}
+		} else {
+			return err
+		}
+	}
+
+	return nil
 }

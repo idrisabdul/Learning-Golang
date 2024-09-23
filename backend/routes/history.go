@@ -16,5 +16,6 @@ func (c *HistoryRoute) HistoryRoute() {
 	HistoryRoute.Get("/list/:id", c.HistoryHdlr.GetHistoryListApproved)
 	HistoryRoute.Get("/list/search/:id", c.HistoryHdlr.GetHistoryListApprovedReject)
 	HistoryRoute.Get("/list/notif/:id", c.HistoryHdlr.GetHistoryListRequested)
+	HistoryRoute.Get("/preview-detail/:content_id/:history_id", c.HistoryHdlr.GetContentDetail)
 
 }

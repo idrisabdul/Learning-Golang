@@ -122,3 +122,33 @@ func (h *HistoryHandler) GetHistoryListRequested(c *fiber.Ctx) error {
 		Data:       getHistoryDetail,
 	})
 }
+
+func (h *HistoryHandler) GetContentDetail(c *fiber.Ctx) error {
+	permission := utils.ValidateToken(c)
+	if permission["status"] != "200" {
+		return c.Status(fiber.StatusUnauthorized).JSON(utils.ResponseAuth{
+			StatusCode: fiber.StatusUnauthorized,
+			Message:    "The token you entered is invalid",
+			Error:      "Authorization failed",
+		})
+	}
+
+	users := permission["user"].(map[string]interface{})
+	userId := users["id"].(string)
+
+	content, err := h.service.GetContentDetail(c, userId)
+	if err != nil {
+		h.log.Printf("Execute GetContentDetail Function: %v", err.Error())
+		return c.Status(fiber.StatusInternalServerError).JSON(utils.ResponseData{
+			StatusCode: fiber.StatusInternalServerError,
+			Message:    "Failed to retrieve content detail",
+			Error:      err.Error(),
+		})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(utils.ResponseData{
+		StatusCode: fiber.StatusOK,
+		Message:    "Success Retrieve Content Detail",
+		Data:       content,
+	})
+}
