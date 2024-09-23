@@ -20,7 +20,7 @@ func NewSubmitService(repos *history.SubmitRepos, log *logrus.Logger) *SubmitSer
 }
 
 func (s *SubmitService) SubmitRequestToUpdateKM(payload entities.RequestHistoryKnowledge, user string) error {
-	if payload.Type != "workaround" && payload.Type != "fix-solution" {
+	if payload.Type != "workaround" && payload.Type != "fix-solution" && payload.Type != "reference" {
 		return &errs.BadRequestError{
 			Err: "Invalid value for field type",
 		}
