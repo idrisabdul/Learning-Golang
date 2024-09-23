@@ -88,8 +88,10 @@ func updateContainKnowledgeContain(author int, tx *gorm.DB, approvedStatus strin
 		var kmDetail interface{}
 		if dataKMHistory.Type == "workaround" {
 			kmDetail = map[string]interface{}{"workaround": &dataKMHistory.Value}
-		} else {
+		} else if dataKMHistory.Type == "fix-solution" {
 			kmDetail = map[string]interface{}{"fix_solution": &dataKMHistory.Value}
+		} else if dataKMHistory.Type == "reference" {
+			kmDetail = map[string]interface{}{"reference": &dataKMHistory.Value}
 		}
 
 		version := dataKM.Version + 1
