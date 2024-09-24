@@ -67,6 +67,18 @@ type SearchDetailResponse struct {
 	Attachment  interface{} `json:"attachment"`
 }
 
+type SearchPreviewDetailResponse struct {
+	ID            int         `gorm:"primaryKey" json:"id"`
+	Type          string      `json:"type"`
+	Title         string      `json:"title"`
+	LastVisitor   int         `json:"last_visitor"`
+	Keywords      interface{} `json:"keywords"`
+	Content       interface{} `json:"content"`
+	Sidebar       interface{} `json:"sidebar"`
+	Attachment    interface{} `json:"attachment"`
+	HistoryStatus string      `json:"history_status"`
+}
+
 func (SearchDetailResponse) TableName() string {
 	return "knowledge_content"
 }

@@ -65,9 +65,20 @@ func (s *HistoryService) GetContentDetail(c *fiber.Ctx, userId string) (interfac
 	}
 
 	dataMap.Content = dataMapContent
-	data = dataMap
 
-	return data, err
+	result := entities.SearchPreviewDetailResponse{
+		ID:            dataMap.ID,
+		Type:          dataMap.Type,
+		Title:         dataMap.Title,
+		LastVisitor:   dataMap.LastVisitor,
+		Keywords:      dataMap.Keywords,
+		Content:       dataMapContent,
+		Sidebar:       dataMap.Sidebar,
+		Attachment:    dataMap.Attachment,
+		HistoryStatus: kmHistory.Status,
+	}
+
+	return result, err
 }
 
 func (s *HistoryService) GetUpsertVisitor(contentId string, userId string) bool {
