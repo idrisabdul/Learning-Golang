@@ -60,6 +60,8 @@ func (s *HistoryService) GetContentDetail(c *fiber.Ctx, userId string) (interfac
 		dataMapContent.Workaround = kmHistory.Value
 	} else if kmHistory.Type == "fix-solution" {
 		dataMapContent.FixSolution = kmHistory.Value
+	} else if kmHistory.Type == "reference" {
+		dataMapContent.Reference = kmHistory.Value
 	}
 
 	dataMap.Content = dataMapContent
