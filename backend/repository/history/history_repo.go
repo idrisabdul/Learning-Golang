@@ -96,11 +96,26 @@ func (r *HistoryRepository) GetHistoryRequested(decodedIDKM string) ([]entities.
 	return history, nil
 }
 
-func (r *HistoryRepository) GetHistoryKnowledgeByIdAndKMContentId(data *entities.HistoryKnowledge, kmDetailHistoryId int, kmContentId int) error {
-	if err := r.db.
-		Where("id = ?", kmDetailHistoryId).
-		Where("knowledge_content_id = ?", kmContentId).
-		First(&data, kmDetailHistoryId).Error; err != nil {
+func (r *HistoryRepository) GetHistoryKnowledgePreviewByIdAndKMContentId(data *entities.HistoryKnowledgePreview, kmDetailHistoryId int, kmContentId int) error {
+	if err := r.db.Table(utils.TABLE_HISTORY_KNOWLEDGE).Select(`
+		hk.id,
+		hk.knowledge_content_id,
+		hk.note,
+		hk.type,
+		hk.value,
+		hk.status,
+		hk.date,
+		hk.updated_at,
+		hk.updated_by,
+		hk.created_at,
+		hk.created_by,
+		hk.deleted_at,
+		hk.deleted,
+		e.employee_name AS requestor
+	`).Joins("LEFT JOIN "+utils.TABLE_EMPLOYEE+" ON hk.requestor = e.id").
+		Where("hk.knowledge_content_id = ?", kmContentId).
+		Where("hk.id = ?", kmDetailHistoryId).
+		Find(&data).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return &errs.ResourceNotFoundError{
 				Err: "Data Not Found",

@@ -77,6 +77,7 @@ type SearchPreviewDetailResponse struct {
 	Sidebar       interface{} `json:"sidebar"`
 	Attachment    interface{} `json:"attachment"`
 	HistoryStatus string      `json:"history_status"`
+	Requestor     string      `json:"requestor"`
 }
 
 func (SearchDetailResponse) TableName() string {
