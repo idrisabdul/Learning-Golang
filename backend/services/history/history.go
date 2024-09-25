@@ -47,8 +47,8 @@ func (s *HistoryService) GetContentDetail(c *fiber.Ctx, userId string) (interfac
 
 	idKMHistory, _ := strconv.Atoi(historyId)
 	idKMContent, _ := strconv.Atoi(contentId)
-	var kmHistory entities.HistoryKnowledge
-	if errKmDetailHistory := s.repo.GetHistoryKnowledgeByIdAndKMContentId(&kmHistory, idKMHistory, idKMContent); errKmDetailHistory != nil {
+	var kmHistory entities.HistoryKnowledgePreview
+	if errKmDetailHistory := s.repo.GetHistoryKnowledgePreviewByIdAndKMContentId(&kmHistory, idKMHistory, idKMContent); errKmDetailHistory != nil {
 		s.log.Errorln(errKmDetailHistory.Error())
 		return nil, errKmDetailHistory
 	}
@@ -76,6 +76,7 @@ func (s *HistoryService) GetContentDetail(c *fiber.Ctx, userId string) (interfac
 		Sidebar:       dataMap.Sidebar,
 		Attachment:    dataMap.Attachment,
 		HistoryStatus: kmHistory.Status,
+		Requestor:     kmHistory.Requestor,
 	}
 
 	return result, err
