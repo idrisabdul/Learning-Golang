@@ -89,6 +89,8 @@ type SearchDetailChildResponse struct {
 	Workaround    string `json:"workaround"`
 	FixSolution   string `json:"fix_solution"`
 	TechnicalNote string `json:"technical_note"`
+	Error         string `json:"error"`
+	RootCause     string `json:"root_cause"`
 	Reference     string `json:"reference"`
 }
 
