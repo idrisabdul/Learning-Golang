@@ -229,7 +229,7 @@ func (r *SearchRepos) GetSearchDetail(id string, user_id string) (interface{}, e
 func (r *SearchRepos) GetSearchChildDetail(id string) interface{} {
 	var detail entities.SearchDetailChildResponse
 	if err := r.db.Table(utils.TABLE_KNOWLEDGE_CONTENT_DETAIL).Select(`
-		kcd.question, kcd.workaround, kcd.fix_solution, kcd.technical_note, kcd.reference
+		kcd.question, kcd.workaround, kcd.fix_solution, kcd.technical_note, kcd.reference, kcd.error, kcd.root_cause
 	`).Where("kcd.knowledge_content_id = ?", id).First(&detail).Error; err != nil {
 		r.log.Errorln("Error retrieving detail: ", err)
 		return entities.SearchDetailChildResponse{}
