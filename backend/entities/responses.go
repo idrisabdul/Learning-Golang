@@ -61,29 +61,29 @@ type (
 	}
 
 	DetailKMDecisionTree struct {
-		ID                     int                   `json:"id"`
-		KnowledgeID            string                `json:"knowledge_id"`
-		KnowledgeContentListID int                   `json:"type_content"`
-		Version                int                   `json:"version"`
-		Title                  string                `json:"title"`
-		Question               string                `json:"question,omitempty"`
-		Content                []DecisionTreeContent `json:"content" gorm:"-"`
-		Keywords               []string              `json:"keyword" gorm:"-"`
-		CompanyID              int                   `json:"company"`
-		OperationCategory1ID   int                   `json:"operational_category_1" gorm:"column:operation_category_1_id"`
-		OperationCategory2ID   int                   `json:"operational_category_2" gorm:"column:operation_category_2_id"`
-		ServiceNameID          int                   `json:"product_name"`
-		ServiceCategory1ID     int                   `json:"product_category" gorm:"column:service_category_1_id"`
-		ServiceCategory2ID     int                   `json:"product_parent_category" gorm:"column:service_category_2_id"`
-		ExpertGroup            int                   `json:"expert_group"`
-		Expertee               *int                  `json:"expertee,omitempty"`
-		Status                 string                `json:"status"`
-		Author                 string                `json:"author"`
-		RetireDate             *time.Time            `json:"retire_date"`
-		PublishedDate          *time.Time            `json:"published_date"`
-		Keyword                string                `json:"-"`
-		KeyContent             string                `json:"key_content,omitempty"`
-		Permission             ButtonPermission      `json:"button_permission" gorm:"-"`
+		ID                     int                       `json:"id"`
+		KnowledgeID            string                    `json:"knowledge_id"`
+		KnowledgeContentListID int                       `json:"type_content"`
+		Version                int                       `json:"version"`
+		Title                  string                    `json:"title"`
+		Question               string                    `json:"question,omitempty"`
+		Content                []*KnowledgeContentOption `json:"content" gorm:"-"`
+		Keywords               []string                  `json:"keyword" gorm:"-"`
+		CompanyID              int                       `json:"company"`
+		OperationCategory1ID   int                       `json:"operational_category_1" gorm:"column:operation_category_1_id"`
+		OperationCategory2ID   int                       `json:"operational_category_2" gorm:"column:operation_category_2_id"`
+		ServiceNameID          int                       `json:"product_name"`
+		ServiceCategory1ID     int                       `json:"product_category" gorm:"column:service_category_1_id"`
+		ServiceCategory2ID     int                       `json:"product_parent_category" gorm:"column:service_category_2_id"`
+		ExpertGroup            int                       `json:"expert_group"`
+		Expertee               *int                      `json:"expertee,omitempty"`
+		Status                 string                    `json:"status"`
+		Author                 string                    `json:"author"`
+		RetireDate             *time.Time                `json:"retire_date"`
+		PublishedDate          *time.Time                `json:"published_date"`
+		Keyword                string                    `json:"-"`
+		KeyContent             string                    `json:"key_content,omitempty"`
+		Permission             ButtonPermission          `json:"button_permission" gorm:"-"`
 	}
 
 	DetailDocument struct {

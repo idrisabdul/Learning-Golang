@@ -40,43 +40,15 @@ func (s *DetailService) DetailKM(idKM string, permission map[string]interface{})
 }
 
 func (s *DetailService) DetailKMDecisionTree(idKM string, permission map[string]interface{}) (entities.DetailKMDecisionTree, error) {
-
-	var content []entities.DecisionTreeContent
-
 	detailKMDecisionTree, errDetailKMDecisionTree := s.repo.DetailKMDecisionTree(idKM)
 	if errDetailKMDecisionTree != nil {
 		return entities.DetailKMDecisionTree{}, errDetailKMDecisionTree
 	}
 
-	questions, ErrQuestions := s.repo.GetQuestionDecisionTree(idKM)
-	if ErrQuestions != nil {
-		return entities.DetailKMDecisionTree{}, ErrQuestions
-	}
-
-	for _, v := range questions {
-
-		var options []entities.DecisionTreeOptions
-
-		option, errOption := s.repo.GetOptionDecisionTree(v.ID)
-		if errOption != nil {
-			return entities.DetailKMDecisionTree{}, errOption
-		}
-
-		for _, v := range option {
-			options = append(options, entities.DecisionTreeOptions{
-				ID:                         v.ID,
-				KnowledgeContentQuestionID: v.KnowledgeContentQuestionID,
-				Option:                     v.Option,
-				Answer:                     v.Solution,
-			})
-		}
-
-		content = append(content, entities.DecisionTreeContent{
-			ID:       v.ID,
-			Question: v.Question,
-			Options:  options,
-		})
-
+	id, _ := strconv.Atoi(idKM)
+	option, errGetListOption := s.repo.GetListOptionDecisionTree(id)
+	if errGetListOption != nil {
+		return entities.DetailKMDecisionTree{}, errGetListOption
 	}
 
 	keywords := strings.Split(detailKMDecisionTree.Keyword, ";")
@@ -95,7 +67,7 @@ func (s *DetailService) DetailKMDecisionTree(idKM string, permission map[string]
 		Version:                detailKMDecisionTree.Version,
 		Title:                  detailKMDecisionTree.Title,
 		Question:               detailKMDecisionTree.Question,
-		Content:                content,
+		Content:                buildOptionTree(option),
 		Keywords:               detailKMDecisionTree.Keywords,
 		OperationCategory1ID:   detailKMDecisionTree.OperationCategory1ID,
 		OperationCategory2ID:   detailKMDecisionTree.OperationCategory2ID,
@@ -111,6 +83,32 @@ func (s *DetailService) DetailKMDecisionTree(idKM string, permission map[string]
 		KeyContent:             detailKMDecisionTree.KeyContent,
 		Permission:             getPermission,
 	}, nil
+}
+
+func buildOptionTree(options []entities.KnowledgeContentOption) []*entities.KnowledgeContentOption {
+	node := make(map[int]*entities.KnowledgeContentOption)
+	result := make([]*entities.KnowledgeContentOption, 0)
+
+	parentIds := make([]int, 0)
+
+	for _, i := range options {
+		nodeTemp := &i
+		node[i.ID] = nodeTemp
+	}
+
+	for _, option := range options {
+		if option.OptionParentId != nil {
+			node[*option.OptionParentId].Options = append(node[*option.OptionParentId].Options, node[option.ID])
+		} else {
+			parentIds = append(parentIds, option.ID)
+		}
+	}
+
+	for _, id := range parentIds {
+		result = append(result, node[id])
+	}
+
+	return result
 }
 
 func (s *DetailService) GetPermissionKm(idKm string, permission map[string]interface{}) (entities.ButtonPermission, error) {

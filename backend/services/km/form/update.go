@@ -1,7 +1,6 @@
 package form
 
 import (
-	"math"
 	"strings"
 	"sygap_new_knowledge_management/backend/entities"
 	"sygap_new_knowledge_management/backend/repository/km/form"
@@ -202,12 +201,12 @@ func (s *UpdateService) UpdateKMDecisionTree(payload entities.SubmitKMDecisionTr
 				options = append(options,
 					entities.KnowledgeContentOption{
 						ID:       q.Options[0].ID,
-						Option:   q.Options[0].Option,
+						Label:    q.Options[0].Option,
 						Solution: q.Options[0].Answer,
 					},
 					entities.KnowledgeContentOption{
 						ID:       q.Options[1].ID,
-						Option:   q.Options[1].Option,
+						Label:    q.Options[1].Option,
 						Solution: q.Options[1].Answer,
 					},
 				)
@@ -218,11 +217,11 @@ func (s *UpdateService) UpdateKMDecisionTree(payload entities.SubmitKMDecisionTr
 				})
 				newOptions = append(newOptions,
 					entities.KnowledgeContentOption{
-						Option:   q.Options[0].Option,
+						Label:    q.Options[0].Option,
 						Solution: q.Options[0].Answer,
 					},
 					entities.KnowledgeContentOption{
-						Option:   q.Options[1].Option,
+						Label:    q.Options[1].Option,
 						Solution: q.Options[1].Answer,
 					})
 			}
@@ -257,10 +256,6 @@ func (s *UpdateService) UpdateKMDecisionTree(payload entities.SubmitKMDecisionTr
 			var x float64 = 0
 
 			for x < i {
-				var j float64 = x / 2
-				k := int(math.Floor(j))
-				l := IDQuestions[k]
-				newOptions[int(x)].KnowledgeContentQuestionID = l
 				x += 1
 			}
 

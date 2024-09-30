@@ -1,7 +1,6 @@
 package form
 
 import (
-	"math"
 	"strconv"
 	"strings"
 	"sygap_new_knowledge_management/backend/entities"
@@ -165,7 +164,7 @@ func (s *SubmitService) SubmitKM(payload entities.SubmitKMNonDecisionTree, autho
 	return utils.GenerateNumberEncode(strconv.Itoa(IDresponse)), nil
 }
 
-func (s *SubmitService) SubmitKMDecisionTree(payload entities.SubmitKMDecisionTree, author int, toDraft bool) (string, error) {
+func (s *SubmitService) SubmitKMDecisionTree(payload entities.RequestSubmitKMDecisionTree, author int, toDraft bool) (string, error) {
 
 	// to knowledge content
 	knowledge_content := &entities.KnowledgeContent{
@@ -199,45 +198,11 @@ func (s *SubmitService) SubmitKMDecisionTree(payload entities.SubmitKMDecisionTr
 		return "", errSubmitToKnowledgeContentDetail
 	}
 
-	// populate data first
-	var questions []entities.KnowledgeContentQuestion
-	var options []entities.KnowledgeContentOption
 	for _, question := range payload.Content {
-		questions = append(questions, entities.KnowledgeContentQuestion{
-			KnowledgeContentID: IDResponse,
-			Question:           question.Question,
-		})
-
-		for _, v := range question.Options {
-			options = append(options, entities.KnowledgeContentOption{
-				Option:   v.Option,
-				Solution: v.Answer,
-			})
+		err := s.repo.SaveQuestionAndOptions(question, knowledge_content.ID)
+		if err != nil {
+			s.log.Error("Error saving question and options:", err)
 		}
-	}
-
-	// assign questions to knowledge content question, the resolve the id question
-	IDQuestion, errSubmitToKnowledgeContentQuestion := s.repo.SubmitToKnowledgeContentQuestion(questions)
-	if errSubmitToKnowledgeContent != nil {
-		return "", errSubmitToKnowledgeContentQuestion
-	}
-
-	// insert the id question to options
-	// credit to anton
-	var i float64 = 2 * float64(len(IDQuestion))
-	var x float64 = 0
-
-	for x < i {
-		var j float64 = x / 2
-		k := int(math.Floor(j))
-		l := IDQuestion[k]
-		options[int(x)].KnowledgeContentQuestionID = l
-		x += 1
-	}
-
-	// then assign options to knowledge content option
-	if errSubmitToKnowledgeContentOption := s.repo.SubmitToKnowledgeContentOption(options); errSubmitToKnowledgeContentOption != nil {
-		return "", errSubmitToKnowledgeContentOption
 	}
 
 	//to knowledge content log
