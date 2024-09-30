@@ -73,11 +73,42 @@ type (
 		CreatedBy              int
 	}
 
+	RequestSubmitKMDecisionTree struct {
+		ID                     int
+		Version                int      `json:"version" validate:"required"`
+		KnowledgeContentListID int      `json:"type_content"`
+		Title                  string   `json:"title" validate:"required"`
+		Question               *string  `json:"question,omitempty"`
+		Content                []Option `json:"content"`
+		Keyword                []string `json:"keyword" validate:"required"`
+		Company                int      `json:"company" validate:"required"`
+		OperationCategory1ID   int      `json:"operational_category_1" validate:"required"`
+		OperationCategory2ID   int      `json:"operational_category_2" validate:"required"`
+		ServiceType            int      `json:"product_name" validate:"required"`
+		ServiceCategory1ID     int      `json:"product_category" validate:"required"`
+		ServiceCategory2ID     int      `json:"product_parent_category" validate:"required"`
+		ExpertGroup            int      `json:"expert_group" validate:"required"`
+		Expertee               *int     `json:"expertee,omitempty"`
+		Status                 string   `json:"status,omitempty"`
+		Note                   string   `default:"-" json:"note"`
+		KeyContent             int      `json:"key_content,omitempty"`
+		CreatedBy              int
+	}
+
 	DecisionTreeContent struct {
 		ID       int                   `json:"id"`
 		Question string                `json:"question"`
 		Options  []DecisionTreeOptions `json:"options"`
 		Action   string                `json:"action,omitempty"`
+	}
+
+	Option struct {
+		ID       int      `json:"id"`
+		Question string   `json:"question"`
+		Label    string   `json:"label"`
+		Options  []Option `json:"options"`
+		Action   string   `json:"action,omitempty"`
+		Answer   string   `json:"answer"`
 	}
 
 	DecisionTreeOptions struct {

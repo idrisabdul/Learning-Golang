@@ -109,3 +109,34 @@ func (r *SubmitRepos) InstanceSubmitToKnowledgeRelationToTicket(data []entities.
 func (r *SubmitRepos) InstanceDetailLogVersion(data int) ([]entities.KnowledgeContentLogVersion, error) {
 	return NewDetailRepos(r.db, r.log).DetailLogVersion(data)
 }
+
+func (r *SubmitRepos) SaveQuestionAndOptions(question entities.Option, idKM int) error {
+	if err := SaveQuestionAndOptionsRecursive(r.db, question, nil, idKM); err != nil {
+		return err
+	}
+	return nil
+}
+
+func SaveQuestionAndOptionsRecursive(db *gorm.DB, question entities.Option, parentOptionID *int, idKM int) error {
+	optionData := entities.KnowledgeContentOption{
+		Label:              question.Label,
+		Solution:           question.Answer,
+		Question:           question.Question,
+		OptionParentId:     parentOptionID,
+		KnowledgeContentID: idKM,
+	}
+	err := db.Create(&optionData).Error
+	if err != nil {
+		return err
+	}
+	idOption := optionData.ID
+
+	for _, childOption := range question.Options {
+		err = SaveQuestionAndOptionsRecursive(db, childOption, &idOption, idKM)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}

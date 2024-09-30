@@ -169,3 +169,18 @@ func (r *DetailRepos) IsknowledgeManager(IDEmp int, knowledgeManagerID int) (boo
 	}
 
 }
+
+func (r *DetailRepos) GetListOptionDecisionTree(idKM int) ([]entities.KnowledgeContentOption, error) {
+	r.log.Print("Execute GetOptionDecisionTree in Repo")
+
+	var option []entities.KnowledgeContentOption
+
+	if errOption := r.db.Table(utils.TABLE_KNOWLEDGE_CONTENT_OPTION).
+		Where("kco.knowledge_content_id = ?", idKM).
+		Find(&option).Error; errOption != nil {
+		r.log.Errorln("Failed Execute GetOptionDecisionTree in Repo: ", errOption)
+		return nil, errOption
+	}
+
+	return option, nil
+}

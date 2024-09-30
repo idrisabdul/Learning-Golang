@@ -46,12 +46,15 @@ type (
 	}
 
 	KnowledgeContentOption struct {
-		ID                         int
-		KnowledgeContentQuestionID int
-		Option                     string
-		Solution                   string
-		DeletedAt                  time.Time `gorm:"default:null"`
-		DeletedBy                  int       `gorm:"default:null"`
+		ID                 int
+		Label              string
+		Solution           string
+		Question           string
+		DeletedAt          time.Time `gorm:"default:null"`
+		DeletedBy          int       `gorm:"default:null"`
+		OptionParentId     *int      `gorm:"default:null"`
+		KnowledgeContentID int
+		Options            []*KnowledgeContentOption `gorm:"foreignKey:OptionParentId" json:"options"`
 	}
 
 	KnowledgeContentQuestion struct {
