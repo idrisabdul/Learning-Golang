@@ -51,40 +51,54 @@ func (r *UpdateRepos) UpdateToKnowledgeContentDetail(data entities.KnowledgeCont
 	return nil
 }
 
-func (r *UpdateRepos) UpdateToKnowledgeContentOption(data entities.KnowledgeContentOption) error {
-	r.log.Print("Execute UpdateToKnowledgeContentKeyword Function")
-
-	if errUpdateToKnowledgeContentOption := r.db.Where("id = ?", data.ID).Updates(&data).Error; errUpdateToKnowledgeContentOption != nil {
-		r.log.Errorln("Failed to UpdateToKnowledgeContentOption: ", errUpdateToKnowledgeContentOption.Error())
-		return errUpdateToKnowledgeContentOption
-	}
-
-	return nil
-}
-
-func (r *UpdateRepos) UpdateToKnowledgeContentQuestion(data entities.KnowledgeContentQuestion) error {
-	r.log.Print("Execute UpdateToKnowledgeContentKeyword Function")
-
-	if errUpdateToKnowledgeContentOption := r.db.Where("id = ?", data.ID).Updates(&data).Error; errUpdateToKnowledgeContentOption != nil {
-		r.log.Errorln("Failed to UpdateToKnowledgeContentQuestion: ", errUpdateToKnowledgeContentOption.Error())
-		return errUpdateToKnowledgeContentOption
-	}
-
-	return nil
-}
-
-func (r *UpdateRepos) InstanceSubmitToKnowledgeContentQuestion(data []entities.KnowledgeContentQuestion) ([]int, error) {
-	return NewSubmitRepos(r.db, r.log).SubmitToKnowledgeContentQuestion(data)
-}
-
-func (r *UpdateRepos) InstanceSubmitToKnowledgeContentOption(data []entities.KnowledgeContentOption) error {
-	return NewSubmitRepos(r.db, r.log).SubmitToKnowledgeContentOption(data)
-}
-
 func (r *UpdateRepos) InstanceSubmitToKnowledgeContentLog(data entities.KnowledgeContentLog) error {
 	return NewSubmitRepos(r.db, r.log).SubmitToKnowledgeContentLog(data)
 }
 
 func (r *UpdateRepos) InstanceSubmitToWorkdetailKnowledgeManagement(data entities.WorkdetailKnowledgeManagement) (int, error) {
 	return workdetail.NewWorkDetail(r.db, r.log).SubmitToWorkdetailKnowledgeManagement(data)
+}
+
+func (r *UpdateRepos) DeleteQuestionAndOptions(idKM int) error {
+	r.log.Print("Execute delete before update decision tree KM")
+	var content entities.KnowledgeContentOption
+
+	if errDeleteDocument := r.db.Table(utils.RemoveAliasFromTable(utils.TABLE_KNOWLEDGE_CONTENT_OPTION)).
+		Where("knowledge_content_id = ?", idKM).Delete(&content).
+		Error; errDeleteDocument != nil {
+		r.log.Errorln("Failed Execute DeleteDocument in Repo: ", errDeleteDocument)
+		return errDeleteDocument
+	}
+	return nil
+}
+
+func (r *UpdateRepos) UpdateQuestionAndOptions(question entities.Option, idKM int) error {
+	if err := UpdateQuestionAndOptionsRecursive(r.db, question, nil, idKM); err != nil {
+		return err
+	}
+	return nil
+}
+
+func UpdateQuestionAndOptionsRecursive(db *gorm.DB, question entities.Option, parentOptionID *int, idKM int) error {
+	optionData := entities.KnowledgeContentOption{
+		Label:              question.Label,
+		Solution:           question.Answer,
+		Question:           question.Question,
+		OptionParentId:     parentOptionID,
+		KnowledgeContentID: idKM,
+	}
+	err := db.Create(&optionData).Error
+	if err != nil {
+		return err
+	}
+	idOption := optionData.ID
+
+	for _, childOption := range question.Options {
+		err = SaveQuestionAndOptionsRecursive(db, childOption, &idOption, idKM)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
