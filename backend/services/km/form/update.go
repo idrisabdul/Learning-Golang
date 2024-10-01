@@ -111,7 +111,7 @@ func (s *UpdateService) UpdateKM(payload entities.SubmitKMNonDecisionTree, autho
 	return nil
 }
 
-func (s *UpdateService) UpdateKMDecisionTree(payload entities.SubmitKMDecisionTree, author int, step string) error {
+func (s *UpdateService) UpdateKMDecisionTree(payload entities.RequestSubmitKMDecisionTree, author int, step string) error {
 
 	// get current status
 	currentStatus := utils.GetCurrentStatusNumber(payload.Status)
@@ -152,7 +152,6 @@ func (s *UpdateService) UpdateKMDecisionTree(payload entities.SubmitKMDecisionTr
 		return errUpdateToKnowledgeContent
 	}
 
-	// do content update if the status < Publish Approval
 	if currentStatus < 4 {
 
 		// to knowledge_content_detail
@@ -161,107 +160,18 @@ func (s *UpdateService) UpdateKMDecisionTree(payload entities.SubmitKMDecisionTr
 			Question:           payload.Question,
 		}
 
-		if errSubmitToKnowledgeContentDetail := s.repo.UpdateToKnowledgeContentDetail(knowledge_content_detail); errSubmitToKnowledgeContentDetail != nil {
-			return errSubmitToKnowledgeContentDetail
+		if errUpdateKnowledgeContentDetail := s.repo.UpdateToKnowledgeContentDetail(knowledge_content_detail); errUpdateKnowledgeContentDetail != nil {
+			return errUpdateKnowledgeContentDetail
 		}
 
-		// Populate questions and answers
-		var questions []entities.KnowledgeContentQuestion
-		var options []entities.KnowledgeContentOption
-
-		var newQuestions []entities.KnowledgeContentQuestion
-		var newOptions []entities.KnowledgeContentOption
-		for _, q := range payload.Content {
-			switch q.Action {
-			case "delete":
-				questions = append(questions, entities.KnowledgeContentQuestion{
-					ID:        q.ID,
-					DeletedAt: utils.ConvertStringToTime(utils.GetTimeNow("normal")),
-					DeletedBy: author,
-				})
-
-				options = append(options,
-					entities.KnowledgeContentOption{
-						ID:        q.Options[0].ID,
-						DeletedAt: utils.ConvertStringToTime(utils.GetTimeNow("normal")),
-						DeletedBy: author,
-					},
-					entities.KnowledgeContentOption{
-						ID:        q.Options[1].ID,
-						DeletedAt: utils.ConvertStringToTime(utils.GetTimeNow("normal")),
-						DeletedBy: author,
-					},
-				)
-			case "update", "none":
-				questions = append(questions, entities.KnowledgeContentQuestion{
-					ID:       q.ID,
-					Question: q.Question,
-				})
-
-				options = append(options,
-					entities.KnowledgeContentOption{
-						ID:       q.Options[0].ID,
-						Label:    q.Options[0].Option,
-						Solution: q.Options[0].Answer,
-					},
-					entities.KnowledgeContentOption{
-						ID:       q.Options[1].ID,
-						Label:    q.Options[1].Option,
-						Solution: q.Options[1].Answer,
-					},
-				)
-			case "new":
-				newQuestions = append(newQuestions, entities.KnowledgeContentQuestion{
-					KnowledgeContentID: payload.ID,
-					Question:           q.Question,
-				})
-				newOptions = append(newOptions,
-					entities.KnowledgeContentOption{
-						Label:    q.Options[0].Option,
-						Solution: q.Options[0].Answer,
-					},
-					entities.KnowledgeContentOption{
-						Label:    q.Options[1].Option,
-						Solution: q.Options[1].Answer,
-					})
-			}
-
+		if errDeleteBeforeUpdateDecisionTree := s.repo.DeleteQuestionAndOptions(knowledge_content.ID); errDeleteBeforeUpdateDecisionTree != nil {
+			return errDeleteBeforeUpdateDecisionTree
 		}
 
-		// then assign questions to table
-		for _, v := range questions {
-			if errUpdateQuestions := s.repo.UpdateToKnowledgeContentQuestion(v); errUpdateQuestions != nil {
-				return errUpdateQuestions
-			}
-		}
-
-		// same goes to options
-		for _, v := range options {
-			if errUpdateOptions := s.repo.UpdateToKnowledgeContentOption(v); errUpdateOptions != nil {
-				return errUpdateOptions
-			}
-		}
-
-		// if there are any new questions and options
-		if len(newQuestions) != 0 {
-
-			// assign new questions to table first, then resolve the ids
-			IDQuestions, errSubmitToKnowledgeContentQuestion := s.repo.InstanceSubmitToKnowledgeContentQuestion(newQuestions)
-			if errSubmitToKnowledgeContentQuestion != nil {
-				return errSubmitToKnowledgeContentQuestion
-			}
-
-			// then populate the ids to each option
-			var i float64 = 2 * float64(len(IDQuestions))
-			var x float64 = 0
-
-			for x < i {
-				x += 1
-			}
-
-			// finally assign the options into table
-			if errSubmitToKnowledgeContentOption := s.repo.InstanceSubmitToKnowledgeContentOption(newOptions); errSubmitToKnowledgeContentOption != nil {
-				return errSubmitToKnowledgeContentOption
+		for _, question := range payload.Content {
+			err := s.repo.UpdateQuestionAndOptions(question, knowledge_content.ID)
+			if err != nil {
+				s.log.Error("Error updating question and options:", err)
 			}
 		}
 
@@ -352,7 +262,7 @@ func (s *UpdateService) SetClosedVersion(idKM, author int, note string) error {
 This is local function, make sure only used in this file. if you want to use it globally, move it to utils
 */
 
-// This function is used for decide which action will inserted to knowledge_content_log
+// This function is used to decide which action will be inserted to knowledge_content_log
 func LogAction(step string) string {
 	if step != "none" && step != "update" {
 		return strings.ToUpper(step)

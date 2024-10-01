@@ -202,7 +202,7 @@ func (h *FormHandler) UpdateKM(c *fiber.Ctx) error {
 	step := c.Params("step", "none")
 
 	if isDecisionTree {
-		var request entities.SubmitKMDecisionTree
+		var request entities.RequestSubmitKMDecisionTree
 		// parse request from Front End
 		if errParseToPayload := c.BodyParser(&request); errParseToPayload != nil {
 			return c.Status(fiber.StatusBadRequest).JSON(utils.ResponseData{
