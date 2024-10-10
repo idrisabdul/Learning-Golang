@@ -145,6 +145,13 @@ func StartApps() {
 	}
 	KnowledgeRelationRoute.SetupKnowledgeRelation()
 
+	// test crud
+	TestCrudRoutes := routes.TestCrudRoute{
+		App:             app,
+		TestCrudHandler: setupCrudTest(mysql, log),
+	}
+	TestCrudRoutes.SetupTestCrudRoutes()
+
 	errApp := app.Listen(":8080")
 	if errApp != nil {
 		logrus.Fatalf("Error starting Fiber app: %v", errApp)
